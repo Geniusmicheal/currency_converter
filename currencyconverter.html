@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+        <title>Currency Converter</title>
+      
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <style type="text/css">
+            body {
+                background-color: aliceblue;
+                background-position: center;
+                background-size: cover;
+                background-attachment: fixed;
+                background-repeat: no-repeat;
+            }
+              
+            .heading {
+                font-family: 'Pacifico', cursive;
+                margin: 35px auto 20px;
+            }
+              
+            hr {
+                border-top: 2px solid black;
+                width: 40%;
+                margin-bottom: 55px;
+            }
+  
+            .main {
+                width: 50vw;
+                margin: auto;
+                padding: 30px;
+                border-radius: 5px;
+                background-color: rgba(0, 0, 0, 0.5);
+                color: white;
+            }
+              
+            label { font-size: 20px; }
+              
+            .btn { width: 200px; }
+  
+            #finalAmount {
+                font-family: 'Lobster', cursive;
+                display: none;
+                margin: 50px auto;
+            }
+              
+            #finalAmount h2 {  font-size: 50px; }
+  
+            .finalValue { font-family: 'Amiri', serif; }
+  
+            @media (max-width: 768px) {
+                hr { width: 60%; }
+                .main { width: 100%; }
+            }
+  
+            @media (max-width: 400px) {
+                .heading { font-size: 60px; }
+                hr { width: 75%; }
+                #finalAmount h2, .finalValue { font-size: 40px; }
+            }            
+        </style>
+    </head>
+  
+    <body>
+        <h1 class="heading text-center display-2">Currency Converter</h1><hr>
+        <div class="container">
+            <div class="main">
+                <div class="form-group">
+                    <label for="oamount"> Amount to Convert :  </label>
+                    <input type="number"  class="form-control searchBox"   placeholder="0.00"  id="oamount">
+                   
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">From</span>
+                            </div>
+                            <select class="custom-select from" id="sel1">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">To</span>
+                            </div>
+                            <select id="sel2" class="custom-select to">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button class="btn btn-primary convert m-2"  type="button"> Convert </button>
+                </div>
+  
+            </div>
+  
+            <div id="finalAmount" class="text-center">
+                <h2>Converted Amount :
+                    <span class="finalValue"  style="color:green;"> </span>
+                </h2>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var currencies= {};
+            var selectbox = document.querySelectorAll('select');
+            var button = document.querySelector('button');
+
+            fetch('https://free.currconv.com/api/v7/currencies?apiKey=c18676c72ff0fe4557d1').
+            then(response => { return response.json(); }).then(currencies_ => {
+                currencies = currencies_.results; let x;
+                for (x in currencies) {
+                    for (let i = 0; i < selectbox.length; i++) {
+                        var opt = document.createElement('option');
+                        opt.value = x;
+                        opt.innerHTML = currencies[x].id +' - '+ currencies[x].currencyName;
+                        selectbox[i].appendChild(opt);
+                    }
+                }
+            });
+            button.addEventListener("click", function(){
+                let curr = `${selectbox[0].value}_${selectbox[1].value}`;
+                let input = document.querySelector('input').value;
+                console.log(curr, input);
+                if (input > 0) {
+                    fetch(`https://free.currconv.com/api/v7/convert?q=${curr}&compact=ultra&apiKey=c18676c72ff0fe4557d1`).then(response => { return response.json(); }).then(rate => {
+                   
+                        document.querySelector('.finalValue').innerHTML = currencies[selectbox[1].value].currencySymbol + (rate[curr]*input);
+                        document.querySelector('#finalAmount').style.display = "block";
+                    });
+                }
+
+            });
+
+
+        </script>
+    </body>
+</html>
+  
+        
